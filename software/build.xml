@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="ID3Custom" basedir="." default="dist">
+
+    <xmlproperty file="config.xml"/>
+
+    <property name="ID3Custom.version" value="0.1"/>
+    <property name="build.name" value="ID3Custom"/>
+    <property name="build.version" value="1.0"/>
+    <property name="build.libs.dir" value="lib"/>
+    <property name="build.srcdir" value="src"/>
+    <property name="build.bindir" value="bin"/>
+    <property name="build.release.dir" value="release"/>
+    <property name="build.release.name" value="${build.name}"/>
+    <property name="skip.tests" value="true"/>
+    <property name="build.mainclass" value="ca.uqac.liara.IHMLauncher"/>
+    <property name="build.jar.filename" value="ID3Custom.jar"/>
+
+    <basename property="build.jar.basename" file="${build.jar.filename}" suffix=".jar"/>
+
+    <path id="build.libs.jars">
+        <fileset dir="${build.libs.dir}" includes="**/*.jar"/>
+    </path>
+
+    <target name="init" depends="clean" description="Initialize all the build">
+        <mkdir dir="${build.bindir}"/>
+        <mkdir dir="${build.release.dir}"/>
+    </target>
+
+    <target name="release" depends="init, jar" description="Compile and zip the release">
+        <delete file="${build.release.dir}/${build.jar.basename}-${build.version}.zip"/>
+        <zip basedir="." destfile="${build.release.dir}/${build.jar.basename}-${build.version}.zip" includes="${build.bindir}/${build.jar.filename},Readme.MD"/>
+    </target>
+
+    <target name="zip" depends="jar" description="Zips the compiled jar">
+        <delete file="${build.jar.basename}-${build.version}.zip"/>
+        <zip basedir="." destfile="${build.jar.basename}-${build.version}.zip" includes="${build.jar.filename},Readme.md"/>
+    </target>
+
+    <target name="dist" depends="jar" description="Same as jar">
+        <!-- Do nothing -->
+    </target>
+
+    <target name="compile" depends="init" description="Compile the sources">
+        <mkdir dir="${build.bindir}"/>
+        <javac
+                target="1.8" source="1.8"
+                srcdir="${build.srcdir}"
+                destdir="${build.bindir}"
+                includeantruntime="false"
+                classpathref="build.libs.jars">
+        </javac>
+        <copy todir="${build.bindir}" includeemptydirs="false">
+            <fileset dir="${build.srcdir}" excludes="**/*.java"/>
+        </copy>
+    </target>
+
+    <target name="jar" depends="compile" description="Create the runnable JAR">
+        <tstamp>
+            <format property="TODAY" pattern="yyyy-MM-dd HH:mm:ss" />
+        </tstamp>
+        <jar destfile="${build.bindir}/${build.jar.filename}" filesetmanifest="skip">
+            <manifest>
+                <attribute name="Main-Class" value="${build.mainclass}"/>
+                <attribute name="Class-Path" value="."/>
+                <attribute name="Built-By" value="${user.name}"/>
+                <attribute name="Built-Date" value="${TODAY}"/>
+                <attribute name="Implementation-Version" value="${build.version}"/>
+            </manifest>
+            <fileset dir="${build.bindir}"/>
+            <zipgroupfileset dir="${build.libs.dir}">
+                <include name="**/*.jar" if="${build.jar.withlibs}"/>
+            </zipgroupfileset>
+            <fileset dir="${build.srcdir}">
+                <include name="*" if="${build.jar.withsrc}"/>
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="clean" description="Clean the project">
+        <delete>
+            <fileset dir="${basedir}" includes="**/*.xml~"/>
+        </delete>
+        <delete>
+            <fileset dir="${build.bindir}" includes="**/*.*"/>
+        </delete>
+    </target>
+
+    <target name="show-properties" description="Print all properties">
+        <echoproperties/>
+    </target>
+
+    <target name="id3custom-version" description="Show build script version">
+        <echo message="This is AntRun version ${ID3Custom.version}" level="info"/>
+    </target>
+</project>

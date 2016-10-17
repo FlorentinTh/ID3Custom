@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<build>
+    <name>ID3Custom</name>
+    <version>0.1-alpha</version>
+    <author>Florentin Thullier - Baptiste Lemarcis</author>
+    <mainclass>ca.uqac.liara.IHMLauncher</mainclass>
+    <srcdir>src</srcdir>
+    <bindir>bin</bindir>
+    <jar>
+        <filename>ID3Custom.jar</filename>
+        <withlibs>true</withlibs>
+        <withsrc>false</withsrc>
+    </jar>
+</build>
